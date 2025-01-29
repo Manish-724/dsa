@@ -1,0 +1,58 @@
+class Node:
+    def __init__(self):
+        self.name = ""
+        self.tel = 0
+
+
+class Hashing:
+    def __init__(self):
+        self.data = [Node() for _ in range(100)]
+
+    def create_record(self, size):
+        n = input("Enter name: ")
+        t = int(input("Enter telephone number: "))
+        index = len(n) % size  # Using name length for indexing (or any other logic for indexing)
+        while True:
+            if self.data[index].name == "":
+                self.data[index].name = n
+                self.data[index].tel = t
+                print(f"\nRecord created successfully:")
+                break
+            else:
+                index = (index + 1) % size
+
+    def delete_record(self, size):
+        n = input("Enter name to delete: ")
+        index = len(n) % size  # Using name length for indexing (or any other logic for indexing)
+        found = False
+        for _ in range(size):
+            if self.data[index].name == n:
+                found = True
+                self.data[index].name = ""
+                self.data[index].tel = 0
+                print("\nRecord deleted successfully")
+                break
+            else:
+                index = (index + 1) % size
+        if not found:
+            print("\nRecord not found")
+
+    def display_record(self, size):
+        print(f"NAME\t\tTELEPHONE")
+        for node in self.data:
+            if node.name != "":
+                print(f"{node.name}\t{node.tel}")
+
+
+if __name__ == "__main__":
+    size = 20
+    s = Hashing()
+
+    print("\n1.CREATE record ")
+    s.create_record(size)
+
+    print("\n\n2.DISPLAY record ")
+    s.display_record(size)
+
+    print("\n\n3.DELETE record ")
+    s.delete_record(size)
