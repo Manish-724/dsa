@@ -1,0 +1,87 @@
+import random
+
+class ChainingHashTable:
+    """ Hash Table using Separate Chaining """
+    def __init__(self, size):
+        self.size = size
+        self.table = [[] for _ in range(size)]
+
+    def _hash(self, key):
+        return hash(key) % self.size
+
+    def insert(self, name, number):
+        index = self._hash(name)
+        self.table[index].append((name, number))
+
+    def search(self, name):
+        index = self._hash(name)
+        comparisons = 0
+        for entry in self.table[index]:
+            comparisons += 1
+            if entry[0] == name:
+                return entry[1], comparisons
+        return None, comparisons
+
+
+class LinearProbingHashTable:
+    """ Hash Table using Linear Probing """
+    def __init__(self, size):
+        self.size = size
+        self.table = [None] * size
+
+    def _hash(self, key):
+        return hash(key) % self.size
+
+    def insert(self, name, number):
+        index = self._hash(name)
+        original_index = index
+        while self.table[index] is not None:
+            index = (index + 1) % self.size
+            if index == original_index:
+                raise Exception("Hash table is full")
+        self.table[index] = (name, number)
+
+    def search(self, name):
+        index = self._hash(name)
+        original_index = index
+        comparisons = 0
+        while self.table[index] is not None:
+            comparisons += 1
+            if self.table[index][0] == name:
+                return self.table[index][1], comparisons
+            index = (index + 1) % self.size
+            if index == original_index:
+                break
+        return None, comparisons
+
+
+# Function to compare both techniques
+def compare_collision_handling():
+    N = 1000  # Size of telephone book
+    names = [f"Person_{i}" for i in range(N)]
+    numbers = [random.randint(1000000000, 9999999999) for _ in range(N)]
+    
+    chaining_table = ChainingHashTable(N)
+    linear_probing_table = LinearProbingHashTable(N * 2)  # Keeping size larger to avoid clustering
+    
+    # Insert data
+    for i in range(N):
+        chaining_table.insert(names[i], numbers[i])
+        linear_probing_table.insert(names[i], numbers[i])
+    
+    # Search for 100 random people and compare comparisons required
+    search_names = random.sample(names, 100)
+    chaining_comparisons = 0
+    linear_probing_comparisons = 0
+
+    for name in search_names:
+        _, comps_chain = chaining_table.search(name)
+        _, comps_linear = linear_probing_table.search(name)
+        chaining_comparisons += comps_chain
+        linear_probing_comparisons += comps_linear
+
+    print(f"Average comparisons in Chaining: {chaining_comparisons / 100}")
+    print(f"Average comparisons in Linear Probing: {linear_probing_comparisons / 100}")
+
+# Run comparison
+compare_collision_handling()
